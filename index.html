@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Materiales & Status</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="container">
+  <div class="card" id="loginBox">
+    <h1>Materiales & Status</h1>
+    <input id="loginUser" placeholder="Usuario" />
+    <input id="loginPass" type="password" placeholder="Password" />
+    <button onclick="login()">Ingresar</button>
+    <p id="loginError" class="error"></p>
+  </div>
+
+  <div class="card hidden" id="adminPanel">
+    <h2>Panel Admin</h2>
+
+    <!-- Crear usuario -->
+    <h3>Usuarios</h3>
+    <div class="row">
+      <input id="newUser" placeholder="Nuevo usuario" />
+      <input id="newPass" placeholder="Password" />
+      <select id="newRole">
+        <option value="proveedor">Proveedor</option>
+        <option value="fabricante">Fabricante</option>
+        <option value="admin">Admin</option>
+      </select>
+    </div>
+    <button onclick="createUser()">Crear Usuario</button>
+    <div id="userList" class="list"></div>
+
+    <hr />
+
+    <!-- Crear proyecto -->
+    <h3>Proyectos</h3>
+    <div class="row">
+      <input id="projectName" placeholder="Nombre del proyecto" />
+      <input id="projectDate" type="date" />
+      <select id="projectFabricante">
+        <option value="">Asignar Fabricante</option>
+      </select>
+      <select id="projectProveedor">
+        <option value="">Asignar Proveedor</option>
+      </select>
+    </div>
+    <button onclick="createProject()">Crear Proyecto</button>
+
+    <h4>Lista de proyectos</h4>
+    <div id="projectList" class="list"></div>
+
+    <button class="secondary" onclick="logout()">Cerrar Sesión</button>
+  </div>
+</div>
+
+<script type="module" src="app.js"></script>
+
+</body>
+</html>
