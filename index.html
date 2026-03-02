@@ -1,87 +1,197 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Macedi - Control de Materiales</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Macedi - Control de Materiales</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-<div class="container">
+  <div class="wrap">
 
-<!-- LOGIN -->
-<div id="loginBox" class="card">
-<h2>Macedi - Control</h2>
-<input id="loginUser" placeholder="Usuario">
-<input id="loginPass" type="password" placeholder="Password">
-<button id="btnLogin">Ingresar</button>
-<div id="loginError" class="error"></div>
-</div>
+    <!-- LOGIN -->
+    <section class="card" id="loginCard">
+      <h1>Materiales & Status</h1>
+      <p class="muted">Acceso</p>
 
-<!-- APP -->
-<div id="appBox" class="hidden">
+      <label>Usuario</label>
+      <input id="loginUser" placeholder="ADMIN01" autocomplete="username"/>
 
-<div class="topbar">
-<div id="userInfo"></div>
-<button id="btnLogout">Cerrar sesión</button>
-</div>
+      <label>Password</label>
+      <input id="loginPass" type="password" placeholder="Hilario123" autocomplete="current-password"/>
 
-<div class="tabs">
-<button data-tab="projects" class="active">Proyectos</button>
-<button data-tab="catalog">Catálogo</button>
-<button data-tab="users">Usuarios</button>
-</div>
+      <button id="btnLogin">Ingresar</button>
+      <p class="error" id="loginError"></p>
+      <p class="muted small">Tip: Usuario ADMIN01 / Password Hilario123</p>
+    </section>
 
-<!-- PROJECTS -->
-<div id="projects" class="tab">
+    <!-- APP -->
+    <section class="card hidden" id="appCard">
+      <div class="topbar">
+        <div>
+          <h2>Macedi - Control de Materiales</h2>
+          <div class="muted" id="userMeta"></div>
+        </div>
+        <button class="btn-outline" id="btnLogout">Cerrar sesión</button>
+      </div>
 
-<div class="card">
-<h3>Crear Proyecto</h3>
-<input id="pName" placeholder="Nombre proyecto">
-<input id="pDate" type="date">
-<button id="btnCreateProject">Crear</button>
-</div>
+      <div class="tabs">
+        <button class="tab active" data-tab="tabProjects">Proyectos</button>
+        <button class="tab" data-tab="tabCatalog" id="tabCatalogBtn">Catálogo</button>
+        <button class="tab" data-tab="tabUsers" id="tabUsersBtn">Usuarios</button>
+      </div>
 
-<div id="projectList"></div>
-</div>
+      <!-- PROYECTOS -->
+      <div id="tabProjects" class="tabpane">
+        <div class="grid2" id="adminProjectCreate">
 
-<!-- CATALOG -->
-<div id="catalog" class="tab hidden">
-<div class="card">
-<h3>Agregar Producto</h3>
-<input id="cName" placeholder="Nombre">
-<input id="cPrice" type="number" placeholder="Precio">
-<button id="btnAddCatalog">Agregar</button>
-</div>
+          <div class="panel">
+            <h3>Crear proyecto (Admin)</h3>
 
-<div id="catalogList"></div>
-</div>
+            <label>Nombre del proyecto</label>
+            <input id="pName" placeholder="Cocina César"/>
 
-<!-- USERS -->
-<div id="users" class="tab hidden">
-<div class="card">
-<h3>Crear Usuario</h3>
-<input id="uName" placeholder="Usuario">
-<input id="uPass" placeholder="Password">
-<select id="uRole">
-<option value="admin">Admin</option>
-<option value="proveedor">Proveedor</option>
-<option value="fabricante">Fabricante</option>
-</select>
-<button id="btnCreateUser">Crear</button>
-</div>
+            <label>Fecha entrega</label>
+            <input id="pEntrega" type="date"/>
 
-<div id="userList"></div>
-</div>
+            <div class="grid2">
+              <div>
+                <label>Asignar Fabricante</label>
+                <select id="pFabricante"></select>
+              </div>
+              <div>
+                <label>Asignar Proveedor</label>
+                <select id="pProveedor"></select>
+              </div>
+            </div>
 
-</div>
-</div>
+            <label>Lista de materiales (pegar)</label>
+            <textarea id="pMateriales" rows="8" placeholder="Formato por línea:
+Material | Proveedor | Cantidad | Precio
 
-<script type="module" src="app.js"></script>
+Ejemplo:
+Melamina blanca 18mm | Arauco | 12 | 650
+Canto PVC 1mm | Canteadora | 4 | 120"></textarea>
+
+            <div class="row">
+              <button id="btnCreateProject">Crear proyecto</button>
+              <button class="btn-outline" id="btnClearMateriales">Limpiar lista</button>
+            </div>
+
+            <p class="muted small">
+              *Si falta un material, lo escribes aquí y listo. (Luego puedes agregarlo al catálogo también.)
+            </p>
+
+            <p class="error" id="projectError"></p>
+            <p class="ok" id="projectOk"></p>
+          </div>
+
+          <div class="panel">
+            <h3>Mis proyectos</h3>
+            <p class="muted small">Admin ve todo. Fabricante/Proveedor solo lo asignado.</p>
+            <div id="projectsList" class="list"></div>
+          </div>
+
+        </div>
+
+        <div id="nonAdminProjects" class="hidden">
+          <h3>Mis proyectos</h3>
+          <div id="projectsList2" class="list"></div>
+        </div>
+      </div>
+
+      <!-- CATALOGO -->
+      <div id="tabCatalog" class="tabpane hidden">
+        <div class="grid2">
+          <div class="panel">
+            <h3>Catálogo (Admin)</h3>
+
+            <div class="row">
+              <button id="btnSeedCatalog">Cargar catálogo base (CSV)</button>
+              <button class="btn-outline" id="btnRefreshCatalog">Actualizar</button>
+            </div>
+            <p class="muted small" id="seedInfo">
+              Esto carga tu archivo <b>Catalogo.csv</b> al Firestore. Si ya existe, no duplica.
+            </p>
+            <p class="ok" id="seedOk"></p>
+            <p class="error" id="seedErr"></p>
+
+            <hr/>
+
+            <label>Agregar producto (si no existe)</label>
+            <input id="cName" placeholder="Producto / Material"/>
+            <div class="grid2">
+              <input id="cProveedor" placeholder="Proveedor (texto)"/>
+              <input id="cFabricante" placeholder="Fabricante (texto)"/>
+            </div>
+            <div class="grid2">
+              <input id="cUnidad" placeholder="Unidad (pz, hoja, m2)"/>
+              <input id="cPrecio" type="number" step="0.01" placeholder="Precio"/>
+            </div>
+
+            <button id="btnAddCatalog">Agregar al catálogo</button>
+            <p class="error" id="catalogError"></p>
+            <p class="ok" id="catalogOk"></p>
+
+            <hr/>
+
+            <h4>Aumento por proveedor</h4>
+            <div class="grid2">
+              <input id="incProveedor" placeholder="Proveedor a ajustar (texto)"/>
+              <input id="incPct" type="number" step="0.01" placeholder="Aumento % (ej 10)"/>
+            </div>
+            <button id="btnApplyIncrease">Aplicar aumento</button>
+            <p class="muted small">Esto actualiza precios del catálogo para ese proveedor.</p>
+          </div>
+
+          <div class="panel">
+            <h3>Lista catálogo</h3>
+            <div class="row">
+              <input id="catalogSearch" placeholder="Buscar..." />
+              <button class="btn-outline" id="btnRefreshCatalog2">Actualizar</button>
+            </div>
+            <div id="catalogList" class="list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- USUARIOS -->
+      <div id="tabUsers" class="tabpane hidden">
+        <div class="grid2">
+          <div class="panel">
+            <h3>Crear usuario (Admin)</h3>
+            <div class="grid2">
+              <input id="uUser" placeholder="Usuario (ej PROV01)"/>
+              <input id="uPass" placeholder="Password"/>
+            </div>
+            <div class="grid2">
+              <select id="uRole">
+                <option value="proveedor">Proveedor</option>
+                <option value="fabricante">Fabricante</option>
+                <option value="admin">Admin</option>
+              </select>
+              <select id="uStatus">
+                <option value="activo">Activo</option>
+                <option value="inactivo">Inactivo</option>
+              </select>
+            </div>
+            <button id="btnCreateUser">Crear usuario</button>
+            <p class="error" id="userError"></p>
+            <p class="ok" id="userOk"></p>
+          </div>
+
+          <div class="panel">
+            <h3>Usuarios</h3>
+            <div id="usersList" class="list"></div>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <script type="module" src="app.js"></script>
 </body>
 </html>
-
-</body>
-</html>
-
