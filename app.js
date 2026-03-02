@@ -15,12 +15,11 @@ const projectsContainer = document.getElementById("projectsList");
 const createProjectBtn = document.getElementById("createProjectBtn");
 
 
-
 /* ============================
    CREAR PROYECTO
 ============================ */
 
-createProjectBtn?.addEventListener("click", async ()=>{
+createProjectBtn.addEventListener("click", async ()=>{
 
   const name = document.getElementById("projectName").value.trim();
   const date = document.getElementById("projectDate").value;
@@ -30,8 +29,6 @@ createProjectBtn?.addEventListener("click", async ()=>{
   await setDoc(doc(collection(db,"projects")),{
     name,
     date,
-    fabricante:"",
-    proveedor:"",
     materiales:[],
     createdAt: new Date()
   });
@@ -61,9 +58,7 @@ async function loadProjects(){
 
     item.innerHTML=`
       <div><b>${d.name}</b></div>
-      <div class="muted small">
-        Entrega: ${d.date || "-"}
-      </div>
+      <div>Entrega: ${d.date || "-"}</div>
     `;
 
     item.addEventListener("click",()=>{
@@ -91,7 +86,7 @@ async function openProjectDetail(projectId){
 
   const data = snap.data();
 
-  // Limpiar detalles anteriores
+  // Eliminar detalle anterior
   const oldDetail = document.getElementById("projectDetail");
   if(oldDetail) oldDetail.remove();
 
@@ -104,7 +99,7 @@ async function openProjectDetail(projectId){
 
   container.innerHTML=`
     <h3>Proyecto: ${data.name}</h3>
-    <p><b>Entrega:</b> ${data.date || "-"}</p>
+    <p>Entrega: ${data.date || "-"}</p>
 
     <hr/>
 
@@ -119,23 +114,18 @@ async function openProjectDetail(projectId){
     <button id="addMaterialBtn">Agregar</button>
   `;
 
-  projectsContainer.after(container);
+  projectsContainer.parentNode.appendChild(container);
 
   const matList = container.querySelector("#materialsList");
 
   function renderMaterials(){
     matList.innerHTML="";
-    materiales.forEach((m,i)=>{
-
+    materiales.forEach((m)=>{
       const div = document.createElement("div");
       div.className="item";
-
       div.innerHTML=`
-        <div><b>${m.material}</b></div>
-        <div class="muted small">Cantidad: ${m.cantidad || "-"}</div>
-        <div class="muted small">Estado: ${m.status || "pendiente"}</div>
+        <b>${m.material}</b> - Cantidad: ${m.cantidad || "-"} - Estado: ${m.status || "pendiente"}
       `;
-
       matList.appendChild(div);
     });
   }
