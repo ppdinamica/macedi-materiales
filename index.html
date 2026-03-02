@@ -1,35 +1,319 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Macedi - Control de Materiales</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Macedi — Control de Materiales</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
-<div class="wrap">
-
-  <h2>Macedi - Control de Materiales</h2>
-
-  <!-- Crear proyecto -->
-  <div class="card">
-    <h3>Crear Proyecto</h3>
-
-    <input id="projectName" placeholder="Nombre del proyecto" />
-    <input id="projectDate" type="date" />
-
-    <button id="createProjectBtn">Crear</button>
+<!-- ═══════════════════ LOGIN ═══════════════════ -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-mark">M</div>
+      <div>
+        <div class="login-brand">Macedi</div>
+        <div class="login-sub">Control de Materiales</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Usuario</label>
+      <input id="loginUser" placeholder="ADMIN01" autocomplete="username"/>
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password"/>
+    </div>
+    <button class="btn-primary full" id="btnLogin">Ingresar</button>
+    <p class="login-error" id="loginError"></p>
   </div>
+</div>
 
-  <!-- Lista proyectos -->
-  <div class="card">
-    <h3>Proyectos</h3>
-    <div id="projectsList"></div>
-  </div>
+<!-- ═══════════════════ APP ═══════════════════ -->
+<div id="appScreen" class="hidden">
 
+  <!-- SIDEBAR -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-top">
+      <div class="sidebar-logo">
+        <div class="logo-mark sm">M</div>
+        <span>Macedi</span>
+      </div>
+      <div class="sidebar-user" id="sidebarUser"></div>
+    </div>
+    <ul class="nav-list" id="navList">
+      <li class="nav-item active" data-view="projects"><span class="nav-icon">◈</span> Proyectos</li>
+      <li class="nav-item" data-view="catalog" id="navCatalog"><span class="nav-icon">◎</span> Catálogo</li>
+      <li class="nav-item" data-view="users" id="navUsers"><span class="nav-icon">◉</span> Usuarios</li>
+    </ul>
+    <button class="btn-logout" id="btnLogout">↩ Salir</button>
+  </nav>
+
+  <!-- HAMBURGER -->
+  <button class="hamburger" id="hamburger">☰</button>
+  <div class="overlay" id="overlay"></div>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- ── PROYECTOS ── -->
+    <section id="viewProjects" class="view active">
+
+      <!-- Admin: crear proyecto -->
+      <div id="adminCreateZone">
+        <div class="page-header">
+          <h1>Proyectos</h1>
+          <button class="btn-primary" id="btnShowCreateProject">+ Nuevo proyecto</button>
+        </div>
+
+        <!-- Formulario crear proyecto (admin) -->
+        <div class="card collapse" id="createProjectForm">
+          <h2 class="card-title">Crear proyecto</h2>
+          <div class="form-grid">
+            <div class="field">
+              <label>Nombre del proyecto</label>
+              <input id="pName" placeholder="Ej: Cocina Familia García"/>
+            </div>
+            <div class="field">
+              <label>Fecha de entrega</label>
+              <input id="pFecha" type="date"/>
+            </div>
+            <div class="field">
+              <label>Asignar Fabricante</label>
+              <select id="pFabricante"><option value="">— Seleccionar —</option></select>
+            </div>
+            <div class="field">
+              <label>Asignar Proveedor</label>
+              <select id="pProveedor"><option value="">— Seleccionar —</option></select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Observaciones iniciales</label>
+            <textarea id="pObs" rows="2" placeholder="Notas, aclaraciones..."></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn-primary" id="btnCreateProject">Crear proyecto</button>
+            <button class="btn-ghost" id="btnCancelCreate">Cancelar</button>
+          </div>
+          <p class="msg-error" id="projectError"></p>
+        </div>
+      </div>
+
+      <!-- Lista de proyectos -->
+      <div class="projects-grid" id="projectsGrid">
+        <div class="loading-state">Cargando proyectos...</div>
+      </div>
+    </section>
+
+    <!-- ── DETALLE PROYECTO ── -->
+    <section id="viewProjectDetail" class="view">
+      <div class="page-header">
+        <button class="btn-ghost back-btn" id="btnBackProjects">← Volver</button>
+        <div id="projectDetailHeader"></div>
+        <div class="header-actions" id="projectDetailActions"></div>
+      </div>
+
+      <!-- Info + estado -->
+      <div id="projectInfoBar"></div>
+
+      <!-- Panel fabricante: agregar materiales -->
+      <div class="card" id="fabricanteAddZone" style="display:none">
+        <h2 class="card-title">Agregar material a la lista</h2>
+        <div class="form-grid">
+          <div class="field full-span">
+            <label>Buscar en catálogo</label>
+            <div class="search-wrapper">
+              <input id="catalogSearch" placeholder="Escribe nombre, familia o color..."/>
+              <div class="search-dropdown hidden" id="searchDropdown"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Nombre / Material</label>
+            <input id="matNombre" placeholder="Nombre del material"/>
+          </div>
+          <div class="field">
+            <label>Familia</label>
+            <input id="matFamilia" placeholder="Melamina, Herraje..."/>
+          </div>
+          <div class="field">
+            <label>Color / Descripción</label>
+            <input id="matColor" placeholder="Blanco, Roble Provenzal..."/>
+          </div>
+          <div class="field">
+            <label>Medida / Unidad</label>
+            <input id="matMedida" placeholder="Hoja 4x8, Pieza..."/>
+          </div>
+          <div class="field">
+            <label>Proveedor</label>
+            <input id="matProveedor" placeholder="Arauco, Cualquiera..."/>
+          </div>
+          <div class="field">
+            <label>Precio unitario</label>
+            <input id="matPrecio" type="number" step="0.01" placeholder="0.00"/>
+          </div>
+          <div class="field">
+            <label>Cantidad requerida</label>
+            <input id="matCantidad" type="number" placeholder="0"/>
+          </div>
+          <div class="field">
+            <label>Fecha esperada (opcional)</label>
+            <input id="matFechaEsperada" type="date"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>Observaciones del material</label>
+          <textarea id="matObs" rows="2" placeholder="Notas específicas de este material..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" id="btnAddMaterial">Agregar material</button>
+          <button class="btn-ghost" id="btnClearMatForm">Limpiar</button>
+        </div>
+        <p class="msg-error" id="matError"></p>
+        <p class="msg-ok" id="matOk"></p>
+      </div>
+
+      <!-- Tabla de materiales -->
+      <div class="card" id="materialesCard">
+        <div class="card-header-row">
+          <h2 class="card-title">Lista de materiales</h2>
+          <div class="resumen-chips" id="resumenChips"></div>
+        </div>
+        <div class="table-wrap">
+          <table class="mat-table" id="materialesTable">
+            <thead>
+              <tr>
+                <th>Material</th>
+                <th>Color/Desc</th>
+                <th>Medida</th>
+                <th>Proveedor</th>
+                <th class="num">Precio</th>
+                <th class="num">Cant.</th>
+                <th class="num">Entregado</th>
+                <th class="num">Faltante</th>
+                <th>Fecha esp.</th>
+                <th>Status</th>
+                <th>Obs.</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="materialesBody">
+              <tr><td colspan="12" class="empty-row">Sin materiales aún</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Sección observaciones del proyecto -->
+      <div class="card" id="proyectoObsCard">
+        <h2 class="card-title">Observaciones del proyecto</h2>
+        <div id="obsHistory"></div>
+        <div class="field" id="addObsZone">
+          <textarea id="newObsText" rows="2" placeholder="Agregar observación o pendiente..."></textarea>
+          <button class="btn-primary" id="btnAddObs" style="margin-top:8px">Agregar nota</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CATÁLOGO ── -->
+    <section id="viewCatalog" class="view">
+      <div class="page-header">
+        <h1>Catálogo de materiales</h1>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <h2 class="card-title">Agregar al catálogo</h2>
+          <div class="form-grid">
+            <div class="field">
+              <label>Familia</label>
+              <input id="cFamilia" placeholder="Melamina, Herraje..."/>
+            </div>
+            <div class="field">
+              <label>Nombre</label>
+              <input id="cNombre" placeholder="Nombre del material"/>
+            </div>
+            <div class="field">
+              <label>Color</label>
+              <input id="cColor" placeholder="Blanco, N/A..."/>
+            </div>
+            <div class="field">
+              <label>Medida</label>
+              <input id="cMedida" placeholder="Hoja 4x8..."/>
+            </div>
+            <div class="field">
+              <label>Proveedor</label>
+              <input id="cProveedorField" placeholder="Arauco..."/>
+            </div>
+            <div class="field">
+              <label>Precio</label>
+              <input id="cPrecio" type="number" step="0.01" placeholder="0.00"/>
+            </div>
+          </div>
+          <button class="btn-primary full" id="btnAddCatalog">Agregar al catálogo</button>
+          <p class="msg-error" id="catalogError"></p>
+          <p class="msg-ok" id="catalogOk"></p>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Buscar en catálogo</h2>
+          <input id="catalogFilter" placeholder="Buscar por nombre, familia, color..." style="margin-bottom:12px"/>
+          <div id="catalogListContainer" style="max-height:500px;overflow-y:auto">
+            <div class="loading-state">Cargando catálogo...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── USUARIOS ── -->
+    <section id="viewUsers" class="view">
+      <div class="page-header">
+        <h1>Usuarios del sistema</h1>
+      </div>
+      <div class="two-col">
+        <div class="card">
+          <h2 class="card-title">Crear usuario</h2>
+          <div class="form-grid">
+            <div class="field">
+              <label>ID de usuario</label>
+              <input id="uId" placeholder="PROV01, FAB01..."/>
+            </div>
+            <div class="field">
+              <label>Contraseña</label>
+              <input id="uPass" placeholder="Mínimo 6 caracteres"/>
+            </div>
+            <div class="field">
+              <label>Nombre completo</label>
+              <input id="uNombre" placeholder="Nombre visible"/>
+            </div>
+            <div class="field">
+              <label>Rol</label>
+              <select id="uRole">
+                <option value="fabricante">Fabricante</option>
+                <option value="proveedor">Proveedor</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary full" id="btnCreateUser">Crear usuario</button>
+          <p class="msg-error" id="userError"></p>
+          <p class="msg-ok" id="userOk"></p>
+        </div>
+
+        <div class="card">
+          <h2 class="card-title">Usuarios registrados</h2>
+          <div id="usersListContainer">
+            <div class="loading-state">Cargando...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
 </div>
 
 <script type="module" src="app.js"></script>
-
 </body>
 </html>
