@@ -5,25 +5,42 @@ import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-const btn = document.getElementById("btnLogin");
-
-btn.addEventListener("click", async () => {
+document.getElementById("btnLogin").addEventListener("click", async () => {
   const user = document.getElementById("loginUser").value.trim();
   const pass = document.getElementById("loginPass").value.trim();
 
-  const snap = await getDoc(doc(db, "users", user));
-
-  if (!snap.exists()) {
-    alert("Usuario no existe");
+  if (!user || !pass) {
+    document.getElementById("loginError").innerText = "Completa usuario y password";
     return;
   }
 
-  const data = snap.data();
+  try {
+    const snap = await getDoc(doc(db, "users", user));
 
-  if (data.password !== pass) {
-    alert("Password incorrecto");
-    return;
+    if (!snap.exists()) {
+      document.getElementById("loginError").innerText = "Usuario no existe";
+      return;
+    }
+
+    const data = snap.data();
+
+    if (data.password !== pass) {
+      document.getElementById("loginError").innerText = "Password incorrecto";
+      return;
+    }
+
+    if (data.status && data.status !== "activo") {
+      document.getElementById("loginError").innerText = "Usuario inactivo";
+      return;
+    }
+
+    document.getElementById("loginCard").classList.add("hidden");
+    document.getElementById("appCard").classList.remove("hidden");
+    document.getElementById("userMeta").innerText =
+      "Usuario: " + user + " | Rol: " + data.role;
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("loginError").innerText = "Error de conexión";
   }
-
-  alert("Login correcto");
 });
