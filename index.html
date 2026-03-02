@@ -1,108 +1,87 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Macedi - Control de Materiales</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Macedi - Control de Materiales</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="wrap">
+<div class="container">
 
-  <!-- LOGIN -->
-  <section class="card" id="loginCard">
-    <h1>Materiales & Status</h1>
-    <p class="muted">Acceso</p>
+<!-- LOGIN -->
+<div id="loginBox" class="card">
+<h2>Macedi - Control</h2>
+<input id="loginUser" placeholder="Usuario">
+<input id="loginPass" type="password" placeholder="Password">
+<button id="btnLogin">Ingresar</button>
+<div id="loginError" class="error"></div>
+</div>
 
-    <label>Usuario</label>
-    <input id="loginUser" placeholder="ADMIN01"/>
+<!-- APP -->
+<div id="appBox" class="hidden">
 
-    <label>Password</label>
-    <input id="loginPass" type="password" placeholder="Hilario123"/>
+<div class="topbar">
+<div id="userInfo"></div>
+<button id="btnLogout">Cerrar sesión</button>
+</div>
 
-    <button id="btnLogin">Ingresar</button>
-    <p class="error" id="loginError"></p>
-  </section>
+<div class="tabs">
+<button data-tab="projects" class="active">Proyectos</button>
+<button data-tab="catalog">Catálogo</button>
+<button data-tab="users">Usuarios</button>
+</div>
 
-  <!-- APP -->
-  <section class="card hidden" id="appCard">
+<!-- PROJECTS -->
+<div id="projects" class="tab">
 
-    <div class="topbar">
-      <div>
-        <h2>Macedi - Control de Materiales</h2>
-        <div class="muted" id="userMeta"></div>
-      </div>
-      <button class="btn-outline" id="btnLogout">Cerrar sesión</button>
-    </div>
+<div class="card">
+<h3>Crear Proyecto</h3>
+<input id="pName" placeholder="Nombre proyecto">
+<input id="pDate" type="date">
+<button id="btnCreateProject">Crear</button>
+</div>
 
-    <div class="tabs">
-      <button class="tab active" data-tab="tabProjects">Proyectos</button>
-      <button class="tab" data-tab="tabCatalog">Catálogo</button>
-      <button class="tab" data-tab="tabUsers">Usuarios</button>
-    </div>
+<div id="projectList"></div>
+</div>
 
-    <!-- PROYECTOS -->
-    <div id="tabProjects" class="tabpane">
+<!-- CATALOG -->
+<div id="catalog" class="tab hidden">
+<div class="card">
+<h3>Agregar Producto</h3>
+<input id="cName" placeholder="Nombre">
+<input id="cPrice" type="number" placeholder="Precio">
+<button id="btnAddCatalog">Agregar</button>
+</div>
 
-      <div id="adminProjectCreate" class="panel">
-        <h3>Crear proyecto</h3>
+<div id="catalogList"></div>
+</div>
 
-        <input id="pName" placeholder="Nombre del proyecto"/>
-        <input id="pEntrega" type="date"/>
+<!-- USERS -->
+<div id="users" class="tab hidden">
+<div class="card">
+<h3>Crear Usuario</h3>
+<input id="uName" placeholder="Usuario">
+<input id="uPass" placeholder="Password">
+<select id="uRole">
+<option value="admin">Admin</option>
+<option value="proveedor">Proveedor</option>
+<option value="fabricante">Fabricante</option>
+</select>
+<button id="btnCreateUser">Crear</button>
+</div>
 
-        <select id="pFabricante"></select>
-        <select id="pProveedor"></select>
+<div id="userList"></div>
+</div>
 
-        <textarea id="pMateriales" rows="5"
-        placeholder="Material | Proveedor | Cantidad | Precio"></textarea>
-
-        <button id="btnCreateProject">Crear proyecto</button>
-      </div>
-
-      <div id="projectsList" class="list"></div>
-      <div id="projectsList2" class="list"></div>
-
-    </div>
-
-    <!-- CATALOGO -->
-    <div id="tabCatalog" class="tabpane hidden">
-      <h3>Catálogo</h3>
-
-      <input id="cName" placeholder="Producto"/>
-      <input id="cProveedor" placeholder="Proveedor"/>
-      <input id="cFabricante" placeholder="Fabricante"/>
-      <input id="cUnidad" placeholder="Unidad"/>
-      <input id="cPrecio" type="number" placeholder="Precio"/>
-
-      <button id="btnAddCatalog">Agregar</button>
-
-      <div id="catalogList"></div>
-    </div>
-
-    <!-- USUARIOS -->
-    <div id="tabUsers" class="tabpane hidden">
-      <h3>Usuarios</h3>
-
-      <input id="uUser" placeholder="Usuario"/>
-      <input id="uPass" placeholder="Password"/>
-
-      <select id="uRole">
-        <option value="admin">Admin</option>
-        <option value="fabricante">Fabricante</option>
-        <option value="proveedor">Proveedor</option>
-      </select>
-
-      <button id="btnCreateUser">Crear</button>
-
-      <div id="usersList"></div>
-    </div>
-
-  </section>
-
+</div>
 </div>
 
 <script type="module" src="app.js"></script>
+</body>
+</html>
 
 </body>
 </html>
+
