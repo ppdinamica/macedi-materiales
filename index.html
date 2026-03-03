@@ -10,7 +10,7 @@
 </head>
 <body>
 
-<!-- ═══════════════════ LOGIN ═══════════════════ -->
+<!-- ══════════ LOGIN ══════════ -->
 <div id="loginScreen" class="login-screen">
   <div class="login-card">
     <div class="login-logo">
@@ -33,10 +33,9 @@
   </div>
 </div>
 
-<!-- ═══════════════════ APP ═══════════════════ -->
+<!-- ══════════ APP ══════════ -->
 <div id="appScreen" class="hidden">
 
-  <!-- SIDEBAR -->
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-top">
       <div class="sidebar-logo">
@@ -45,268 +44,258 @@
       </div>
       <div class="sidebar-user" id="sidebarUser"></div>
     </div>
-    <ul class="nav-list" id="navList">
+    <ul class="nav-list">
       <li class="nav-item active" data-view="projects"><span class="nav-icon">◈</span> Proyectos</li>
-      <li class="nav-item" data-view="catalog" id="navCatalog"><span class="nav-icon">◎</span> Catálogo</li>
-      <li class="nav-item" data-view="users" id="navUsers"><span class="nav-icon">◉</span> Usuarios</li>
+      <li class="nav-item hidden" data-view="catalog" id="navCatalog"><span class="nav-icon">◎</span> Catálogo</li>
+      <li class="nav-item hidden" data-view="users"   id="navUsers"><span class="nav-icon">◉</span> Usuarios</li>
     </ul>
     <button class="btn-logout" id="btnLogout">↩ Salir</button>
   </nav>
 
-  <!-- HAMBURGER -->
   <button class="hamburger" id="hamburger">☰</button>
   <div class="overlay" id="overlay"></div>
 
-  <!-- MAIN -->
   <main class="main-content">
 
-    <!-- ── PROYECTOS ── -->
+    <!-- ══════════ PROYECTOS ══════════ -->
     <section id="viewProjects" class="view active">
-
-      <!-- Admin: crear proyecto -->
-      <div id="adminCreateZone">
-        <div class="page-header">
-          <h1>Proyectos</h1>
-          <button class="btn-primary" id="btnShowCreateProject">+ Nuevo proyecto</button>
-        </div>
-
-        <!-- Formulario crear proyecto (admin) -->
-        <div class="card collapse" id="createProjectForm">
-          <h2 class="card-title">Crear proyecto</h2>
-          <div class="form-grid">
-            <div class="field">
-              <label>Nombre del proyecto</label>
-              <input id="pName" placeholder="Ej: Cocina Familia García"/>
-            </div>
-            <div class="field">
-              <label>Fecha de entrega</label>
-              <input id="pFecha" type="date"/>
-            </div>
-            <div class="field">
-              <label>Asignar Fabricante</label>
-              <select id="pFabricante"><option value="">— Seleccionar —</option></select>
-            </div>
-            <div class="field">
-              <label>Asignar Proveedor</label>
-              <select id="pProveedor"><option value="">— Seleccionar —</option></select>
-            </div>
-          </div>
-          <div class="field">
-            <label>Observaciones iniciales</label>
-            <textarea id="pObs" rows="2" placeholder="Notas, aclaraciones..."></textarea>
-          </div>
-          <div class="form-actions">
-            <button class="btn-primary" id="btnCreateProject">Crear proyecto</button>
-            <button class="btn-ghost" id="btnCancelCreate">Cancelar</button>
-          </div>
-          <p class="msg-error" id="projectError"></p>
-        </div>
+      <div class="page-header">
+        <h1>Proyectos</h1>
+        <button class="btn-primary" id="btnShowCreateProject" style="display:none">+ Nuevo proyecto</button>
       </div>
 
-      <!-- Lista de proyectos -->
+      <div class="card collapse" id="createProjectForm">
+        <h2 class="card-title">Nuevo proyecto</h2>
+        <div class="form-grid">
+          <div class="field">
+            <label>Cliente / Nombre del proyecto</label>
+            <input id="pName" placeholder="Ej: Familia García"/>
+          </div>
+          <div class="field">
+            <label>Tipo de mueble</label>
+            <input id="pTipo" placeholder="Ej: Cocina integral, Closet..."/>
+          </div>
+          <div class="field">
+            <label>Fabricante</label>
+            <select id="pFabricante"><option value="">— Seleccionar —</option></select>
+          </div>
+          <div class="field">
+            <label>Proveedor de materiales</label>
+            <select id="pProveedor"><option value="">— Seleccionar —</option></select>
+          </div>
+          <div class="field">
+            <label>Fecha inicio fabricación</label>
+            <input id="pFechaInicio" type="date"/>
+          </div>
+          <div class="field">
+            <label>Fecha entrega materiales</label>
+            <input id="pFechaMat" type="date"/>
+          </div>
+          <div class="field">
+            <label>Fecha entrega al cliente</label>
+            <input id="pFechaCliente" type="date"/>
+          </div>
+        </div>
+        <div class="field">
+          <label>Notas iniciales</label>
+          <textarea id="pObs" rows="2" placeholder="Observaciones, aclaraciones..."></textarea>
+        </div>
+        <div class="form-actions">
+          <button class="btn-primary" id="btnCreateProject">Crear proyecto</button>
+          <button class="btn-ghost" id="btnCancelCreate">Cancelar</button>
+        </div>
+        <p class="msg-error" id="projectError"></p>
+      </div>
+
       <div class="projects-grid" id="projectsGrid">
         <div class="loading-state">Cargando proyectos...</div>
       </div>
     </section>
 
-    <!-- ── DETALLE PROYECTO ── -->
+    <!-- ══════════ DETALLE PROYECTO ══════════ -->
     <section id="viewProjectDetail" class="view">
+
       <div class="page-header">
         <button class="btn-ghost back-btn" id="btnBackProjects">← Volver</button>
-        <div id="projectDetailHeader"></div>
-        <div class="header-actions" id="projectDetailActions"></div>
+        <div id="projectDetailHeader" style="flex:1"></div>
+        <div id="projectDetailActions" class="header-actions"></div>
       </div>
 
-      <!-- Info + estado -->
+      <!-- Info fechas -->
       <div id="projectInfoBar"></div>
 
-      <!-- Panel fabricante: agregar materiales -->
-      <div class="card" id="fabricanteAddZone" style="display:none">
-        <h2 class="card-title">Agregar material a la lista</h2>
+      <!-- Barra de flujo -->
+      <div id="wfBarContainer"></div>
+
+      <!-- Editar fechas (solo admin) -->
+      <div class="card collapse" id="editDatesCard">
+        <h2 class="card-title">Ajustar fechas del proyecto</h2>
         <div class="form-grid">
-          <div class="field full-span">
-            <label>Buscar en catálogo</label>
-            <div class="search-wrapper">
-              <input id="catalogSearch" placeholder="Escribe nombre, familia o color..."/>
-              <div class="search-dropdown hidden" id="searchDropdown"></div>
-            </div>
+          <div class="field">
+            <label>Fecha inicio fabricación</label>
+            <input id="editFechaInicio" type="date"/>
           </div>
           <div class="field">
-            <label>Nombre / Material</label>
-            <input id="matNombre" placeholder="Nombre del material"/>
+            <label>Fecha entrega materiales</label>
+            <input id="editFechaMat" type="date"/>
           </div>
           <div class="field">
-            <label>Familia</label>
-            <input id="matFamilia" placeholder="Melamina, Herraje..."/>
+            <label>Fecha entrega al cliente</label>
+            <input id="editFechaCliente" type="date"/>
           </div>
-          <div class="field">
-            <label>Color / Descripción</label>
-            <input id="matColor" placeholder="Blanco, Roble Provenzal..."/>
-          </div>
-          <div class="field">
-            <label>Medida / Unidad</label>
-            <input id="matMedida" placeholder="Hoja 4x8, Pieza..."/>
-          </div>
-          <div class="field">
-            <label>Proveedor</label>
-            <input id="matProveedor" placeholder="Arauco, Cualquiera..."/>
-          </div>
-          <div class="field">
-            <label>Precio unitario</label>
-            <input id="matPrecio" type="number" step="0.01" placeholder="0.00"/>
-          </div>
-          <div class="field">
-            <label>Cantidad requerida</label>
-            <input id="matCantidad" type="number" placeholder="0"/>
-          </div>
-          <div class="field">
-            <label>Fecha esperada (opcional)</label>
-            <input id="matFechaEsperada" type="date"/>
-          </div>
-        </div>
-        <div class="field">
-          <label>Observaciones del material</label>
-          <textarea id="matObs" rows="2" placeholder="Notas específicas de este material..."></textarea>
         </div>
         <div class="form-actions">
-          <button class="btn-primary" id="btnAddMaterial">Agregar material</button>
-          <button class="btn-ghost" id="btnClearMatForm">Limpiar</button>
+          <button class="btn-primary" id="btnSaveDates">Guardar fechas</button>
+          <button class="btn-ghost" id="btnCancelDates">Cancelar</button>
+        </div>
+      </div>
+
+      <!-- Zona agregar materiales (fabricante / admin) -->
+      <div class="card" id="fabricanteAddZone" style="display:none">
+        <div class="mat-add-header">
+          <h2 class="card-title" style="margin-bottom:0;border:none;padding:0">Lista de materiales necesarios</h2>
+          <span class="mat-add-hint">Agrega todo lo que necesitas para este proyecto</span>
+        </div>
+
+        <!-- Búsqueda rápida catálogo -->
+        <div class="catalog-quick-search" id="catalogQuickSearch">
+          <div class="search-wrapper">
+            <input id="catalogSearch" placeholder="🔍 Buscar en catálogo para agregar rápido..."/>
+            <div class="search-dropdown hidden" id="searchDropdown"></div>
+          </div>
+        </div>
+
+        <!-- Tabla entrada materiales -->
+        <div class="mat-entry-table">
+          <div class="mat-entry-head">
+            <span>Material / Descripción</span>
+            <span>Familia</span>
+            <span>Cant.</span>
+            <span>Nota</span>
+            <span></span>
+          </div>
+          <div id="matRows"></div>
+        </div>
+
+        <div class="form-actions" style="margin-top:12px">
+          <button class="btn-ghost btn-addrow" id="btnAddRow">+ Agregar línea</button>
+          <button class="btn-primary" id="btnSaveMaterials">💾 Guardar lista</button>
         </div>
         <p class="msg-error" id="matError"></p>
         <p class="msg-ok" id="matOk"></p>
       </div>
 
-      <!-- Tabla de materiales -->
+      <!-- Tabla materiales guardados -->
       <div class="card" id="materialesCard">
         <div class="card-header-row">
-          <h2 class="card-title">Lista de materiales</h2>
+          <h2 class="card-title">Materiales del proyecto</h2>
           <div class="resumen-chips" id="resumenChips"></div>
         </div>
-        <div class="table-wrap">
-          <table class="mat-table" id="materialesTable">
-            <thead>
-              <tr>
+
+        <!-- Vista proveedor (sin precios) -->
+        <div id="tableProveedorWrap" style="display:none">
+          <div class="table-wrap">
+            <table class="mat-table">
+              <thead><tr>
                 <th>Material</th>
-                <th>Color/Desc</th>
-                <th>Medida</th>
-                <th>Proveedor</th>
-                <th class="num">Precio</th>
+                <th>Familia</th>
                 <th class="num">Cant.</th>
                 <th class="num">Entregado</th>
                 <th class="num">Faltante</th>
-                <th>Fecha esp.</th>
                 <th>Status</th>
-                <th>Obs.</th>
+                <th>Nota</th>
+              </tr></thead>
+              <tbody id="matBodyProveedor"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Vista admin / fabricante -->
+        <div id="tableAdminWrap" style="display:none">
+          <div class="table-wrap">
+            <table class="mat-table">
+              <thead><tr>
+                <th>Material</th>
+                <th>Familia</th>
+                <th class="num">Cant.</th>
+                <th class="num">Entregado</th>
+                <th class="num">Faltante</th>
+                <th>Status</th>
+                <th>Nota</th>
                 <th></th>
-              </tr>
-            </thead>
-            <tbody id="materialesBody">
-              <tr><td colspan="12" class="empty-row">Sin materiales aún</td></tr>
-            </tbody>
-          </table>
+              </tr></thead>
+              <tbody id="matBodyAdmin"></tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      <!-- Sección observaciones del proyecto -->
-      <div class="card" id="proyectoObsCard">
-        <h2 class="card-title">Observaciones del proyecto</h2>
+      <!-- Observaciones / bitácora -->
+      <div class="card">
+        <h2 class="card-title">Bitácora del proyecto</h2>
         <div id="obsHistory"></div>
-        <div class="field" id="addObsZone">
-          <textarea id="newObsText" rows="2" placeholder="Agregar observación o pendiente..."></textarea>
-          <button class="btn-primary" id="btnAddObs" style="margin-top:8px">Agregar nota</button>
+        <div id="addObsZone" style="display:none">
+          <div class="obs-input-row">
+            <textarea id="newObsText" rows="2" placeholder="Escribe una nota, ajuste o pendiente..."></textarea>
+            <button class="btn-primary" id="btnAddObs">Agregar</button>
+          </div>
         </div>
       </div>
+
     </section>
 
-    <!-- ── CATÁLOGO ── -->
+    <!-- ══════════ CATÁLOGO ══════════ -->
     <section id="viewCatalog" class="view">
-      <div class="page-header">
-        <h1>Catálogo de materiales</h1>
-      </div>
+      <div class="page-header"><h1>Catálogo de materiales</h1></div>
       <div class="two-col">
         <div class="card">
-          <h2 class="card-title">Agregar al catálogo</h2>
+          <h2 class="card-title">Agregar material</h2>
           <div class="form-grid">
-            <div class="field">
-              <label>Familia</label>
-              <input id="cFamilia" placeholder="Melamina, Herraje..."/>
-            </div>
-            <div class="field">
-              <label>Nombre</label>
-              <input id="cNombre" placeholder="Nombre del material"/>
-            </div>
-            <div class="field">
-              <label>Color</label>
-              <input id="cColor" placeholder="Blanco, N/A..."/>
-            </div>
-            <div class="field">
-              <label>Medida</label>
-              <input id="cMedida" placeholder="Hoja 4x8..."/>
-            </div>
-            <div class="field">
-              <label>Proveedor</label>
-              <input id="cProveedorField" placeholder="Arauco..."/>
-            </div>
-            <div class="field">
-              <label>Precio</label>
-              <input id="cPrecio" type="number" step="0.01" placeholder="0.00"/>
-            </div>
+            <div class="field"><label>Familia</label><input id="cFamilia" placeholder="Melamina, Herraje..."/></div>
+            <div class="field"><label>Nombre</label><input id="cNombre" placeholder="Nombre del material"/></div>
+            <div class="field"><label>Color / Descripción</label><input id="cColor" placeholder="Blanco, N/A..."/></div>
+            <div class="field"><label>Medida</label><input id="cMedida" placeholder="Hoja 4x8..."/></div>
+            <div class="field"><label>Proveedor</label><input id="cProveedorField" placeholder="Arauco, Blum..."/></div>
+            <div class="field"><label>Precio</label><input id="cPrecio" type="number" step="0.01" placeholder="0.00"/></div>
           </div>
           <button class="btn-primary full" id="btnAddCatalog">Agregar al catálogo</button>
           <p class="msg-error" id="catalogError"></p>
           <p class="msg-ok" id="catalogOk"></p>
         </div>
-
         <div class="card">
           <h2 class="card-title">Buscar en catálogo</h2>
-          <input id="catalogFilter" placeholder="Buscar por nombre, familia, color..." style="margin-bottom:12px"/>
-          <div id="catalogListContainer" style="max-height:500px;overflow-y:auto">
-            <div class="loading-state">Cargando catálogo...</div>
-          </div>
+          <input id="catalogFilter" placeholder="Buscar..." style="margin-bottom:12px"/>
+          <div id="catalogListContainer" style="max-height:520px;overflow-y:auto"></div>
         </div>
       </div>
     </section>
 
-    <!-- ── USUARIOS ── -->
+    <!-- ══════════ USUARIOS ══════════ -->
     <section id="viewUsers" class="view">
-      <div class="page-header">
-        <h1>Usuarios del sistema</h1>
-      </div>
+      <div class="page-header"><h1>Usuarios del sistema</h1></div>
       <div class="two-col">
-        <div class="card">
-          <h2 class="card-title">Crear usuario</h2>
-          <div class="form-grid">
-            <div class="field">
-              <label>ID de usuario</label>
-              <input id="uId" placeholder="PROV01, FAB01..."/>
-            </div>
-            <div class="field">
-              <label>Contraseña</label>
-              <input id="uPass" placeholder="Mínimo 6 caracteres"/>
-            </div>
-            <div class="field">
-              <label>Nombre completo</label>
-              <input id="uNombre" placeholder="Nombre visible"/>
-            </div>
-            <div class="field">
-              <label>Rol</label>
-              <select id="uRole">
-                <option value="fabricante">Fabricante</option>
-                <option value="proveedor">Proveedor</option>
-                <option value="admin">Admin</option>
-              </select>
-            </div>
+        <div class="card" id="userFormCard">
+          <h2 class="card-title" id="userFormTitle">Crear usuario</h2>
+          <div class="field"><label>Nombre completo</label><input id="uNombre" placeholder="Nombre visible"/></div>
+          <div class="field"><label>Rol</label>
+            <select id="uRole">
+              <option value="fabricante">Fabricante</option>
+              <option value="proveedor">Proveedor</option>
+              <option value="admin">Admin</option>
+            </select>
           </div>
-          <button class="btn-primary full" id="btnCreateUser">Crear usuario</button>
+          <div class="field"><label>ID usuario (para login)</label><input id="uId" placeholder="FAB01, PROV01..."/></div>
+          <div class="field"><label>Contraseña</label><input id="uPass" placeholder="Mínimo 4 caracteres"/></div>
+          <div class="form-actions">
+            <button class="btn-primary" id="btnSaveUser">Crear usuario</button>
+            <button class="btn-ghost hidden" id="btnCancelEdit">Cancelar</button>
+          </div>
           <p class="msg-error" id="userError"></p>
           <p class="msg-ok" id="userOk"></p>
         </div>
-
         <div class="card">
           <h2 class="card-title">Usuarios registrados</h2>
-          <div id="usersListContainer">
-            <div class="loading-state">Cargando...</div>
-          </div>
+          <div id="usersListContainer"><div class="loading-state">Cargando...</div></div>
         </div>
       </div>
     </section>
