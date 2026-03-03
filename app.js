@@ -129,10 +129,11 @@ async function loadProjects() {
     if (session.role === 'admin') {
       q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
     } else if (session.role === 'fabricante') {
-      q = query(collection(db, 'projects'), where('fabricanteId', '==', session.userId), orderBy('createdAt', 'desc'));
+      // Sin orderBy para evitar índice compuesto — ordenamos en cliente
+      q = query(collection(db, 'projects'), where('fabricanteId', '==', session.userId));
     } else {
-      // proveedor — solo ve proyectos aprobados+
-      q = query(collection(db, 'projects'), where('proveedorId', '==', session.userId), orderBy('createdAt', 'desc'));
+      // proveedor — Sin orderBy para evitar índice compuesto — ordenamos en cliente
+      q = query(collection(db, 'projects'), where('proveedorId', '==', session.userId));
     }
 
     const snap = await getDocs(q);
@@ -140,9 +141,13 @@ async function loadProjects() {
 
     if (snap.empty) { grid.innerHTML = '<div class="loading-state">No hay proyectos aún.</div>'; return; }
 
+    // Ordenar en cliente - sin índice compuesto
+    const allDocs = [];
+    snap.forEach(s => allDocs.push({ id: s.id, d: s.data() }));
+    allDocs.sort((a, b) => (b.d.createdAt?.toMillis?.() || 0) - (a.d.createdAt?.toMillis?.() || 0));
+
     let count = 0;
-    snap.forEach(s => {
-      const d = s.data();
+    allDocs.forEach(({ id: sid, d }) => {
       // Proveedor solo ve aprobados en adelante
       if (session.role === 'proveedor' && !['aprobado','en-entrega','completado'].includes(d.estadoFlujo)) return;
 
@@ -160,7 +165,7 @@ async function loadProjects() {
         </div>
         <div>${badge(d.estadoFlujo || 'pendiente')}</div>
       `;
-      card.addEventListener('click', () => openProject(s.id, d));
+      card.addEventListener('click', () => openProject(sid, d));
       grid.appendChild(card);
     });
 
